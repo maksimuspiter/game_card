@@ -1,4 +1,5 @@
-from random import choice
+import os
+from random import choice, randrange
 
 
 class GameField:
@@ -76,16 +77,16 @@ class Card:
         return self.extra_health
 
     def __str__(self):
-        return self.IMG_CARD_TEST
-
+        return f'{self.IMG_CARD_TEST}{abs(self.extra_health)}'
 
 
 class Hero(Card):
     """
         🥷 🕵 👮 🤴 👸 👲
     """
+    list_hero = ["🥷", "🕵", "👮", "🤴", "👸", "👲"]
     CODE = 'hero'
-    IMG_CARD_TEST = '👲'
+    IMG_CARD_TEST = choice(list_hero)
     STATUS = "HERO"
 
     # def __new__(cls, *args, **kwargs):
@@ -113,25 +114,31 @@ class EmptyCards(Card):
 class GoodCards(Card):
 
     CODE = 'GOOD'
-    IMG_CARD_TEST = '++'
+    IMG_CARD_TEST = f'+'
     STATUS = "GOOD"
 
     def __init__(self, level_field=1):
         self.health = 2
-        self.extra_health = 2
+        self.extra_health = randrange(1, 6)
         self.level_field = level_field
+
+    def get_health(self):
+        return self.extra_health
 
 
 class BadCards(Card):
 
     CODE = "BAD"
-    IMG_CARD_TEST = '--'
+    IMG_CARD_TEST = '-'
     STATUS = "GOOD"
 
     def __init__(self, level_field=1):
         self.health = 2
-        self.extra_health = -2
+        self.extra_health = -randrange(1, 6)
         self.level_field = level_field
+
+    def get_health(self):
+        return self.extra_health
 
 
 def play():
@@ -161,7 +168,7 @@ def play():
             f1.move(move_right())
         elif direction == "stop":
             return True
-    f1 = GameField()
+    f1 = GameField(randrange(3, 6))
     f1.create_field()
     hero = Hero(10)
 
@@ -173,10 +180,10 @@ def play():
     while True:
         if move():
             break
+        os.system('cls||clear')
         f1.show_field()
         print()
         print(f'Health: {hero.get_health()}')
-        # print()
 
 
 if __name__ == '__main__':
