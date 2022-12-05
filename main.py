@@ -50,6 +50,11 @@ class GameField:
     def get_position_hero(self):
         return self.position_hero
 
+    def get_hero(self):
+        x, y = self.get_position_hero()
+        hero = self.field[x][y]
+        return hero
+
     def move(self, direction: (int, int)):
         x_hero, y_hero = self.get_position_hero()
         x_delta, y_delta = direction
@@ -215,10 +220,6 @@ class Hero(Card):
     STATUS = "HERO"
     title = 'HERO'
 
-    # def __new__(cls, *args, **kwargs):
-    #     print("I'm a hero")
-    #     return super().__new__(cls, *args, **kwargs)
-
     def __init__(self, health):
         self.health = health
         self.max_health = 10
@@ -250,6 +251,12 @@ class Hero(Card):
         self.health += extra
         if self.health > self.max_health:
             self.health = self.max_health
+
+    def get_hero_coin(self):
+        return self.coins
+
+    def level_hero_coins(self):
+        print(f"level coins: {self.coins}")
 
 
 
@@ -353,55 +360,69 @@ class Coin(GoodCards):
                 [p_star * 14]]
 
 
+def move(field):
+
+    def move_up():
+        return -1, 0
+
+    def move_down():
+        return 1, 0
+
+    def move_left():
+        return 0, -1
+
+    def move_right():
+        return 0, 1
+
+    direction = input().strip().lower()
+    if direction in ("w", "up", "8", "ц"):
+        field.move(move_up())
+    elif direction in ("s", "down", "5", "ы"):
+        field.move(move_down())
+    elif direction in ("a", "left", "4", "ф"):
+        field.move(move_left())
+    elif direction in ("d", "right", "6", "в"):
+        field.move(move_right())
+    elif direction == "stop":
+        return "stop"
+
+def show_field(hero, field):
+    hero.level_hero_coins()
+    field.show_field_big()
+    hero.show_hero_card()
+
+def create_new_field(field_size=randrange(3, 6), health_points=10):
+    os.system('cls||clear')
+    field = GameField(field_size)
+    field.create_field()
+    hero = Hero(health_points)
+    field.add_hero(hero)
+
+    show_field(hero=hero, field=field)
+
+    return hero, field
+
+def get_end_play(hero, field):
+    hero.health = 0
+    show_field(hero=hero, field=field)
+    print("You are lose!")
+
 
 def play():
 
-    def move():
-
-        def move_up():
-            return -1, 0
-
-        def move_down():
-            return 1, 0
-
-        def move_left():
-            return 0, -1
-
-        def move_right():
-            return 0, 1
-
-        direction = input().strip().lower()
-        if direction in ("w", "up", "8", "ц"):
-            f1.move(move_up())
-        elif direction in ("s", "down", "5", "ы"):
-            f1.move(move_down())
-        elif direction in ("a", "left", "4", "ф"):
-            f1.move(move_left())
-        elif direction in ("d", "right", "6", "в"):
-            f1.move(move_right())
-        elif direction == "stop":
-            return True
-
     os.system('cls||clear')
-    f1 = GameField(randrange(3, 6))
-    f1.create_field()
-    hero = Hero(10)
-    f1.add_hero(hero)
-    f1.show_field_big()
-    hero.show_hero_card()
+    hero, field = create_new_field(field_size=3, health_points=10)
 
     while True:
-        if move():
+        if move(field=field) == "stop":
             break
         os.system('cls||clear')
+
         if hero.get_health() <= 0:
-            hero.health = 0
-            f1.show_field_big()
-            print("You are lose!")
+            get_end_play(hero=hero, field=field)
             break
 
-        f1.show_field_big()
-        hero.show_hero_card()
+        show_field(hero=hero, field=field)
 
 if __name__ == '__main__':
     play()
